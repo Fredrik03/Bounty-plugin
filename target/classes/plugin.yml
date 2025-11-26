@@ -1,0 +1,51 @@
+name: BountyPlugin
+version: '1.0.0'
+main: com.bounty.BountyPlugin
+api-version: '1.21'
+author: YourName
+description: A plugin that allows players to set bounties on other players with custom items
+
+commands:
+  bounty:
+    description: Bounty commands
+    usage: /bounty [list|view|remove|leaderboard]
+    permission: bounty.use
+    permission-message: You don't have permission to use this command!
+  bounties:
+    description: Open bounties GUI
+    usage: /bounties
+    permission: bounty.view
+    permission-message: You don't have permission to use this command!
+  setbounty:
+    description: Set a bounty on a player
+    usage: /setbounty <player>
+    permission: bounty.set
+    permission-message: You don't have permission to use this command!
+  leaderboard:
+    description: View bounty leaderboard
+    usage: /leaderboard
+    permission: bounty.view
+    permission-message: You don't have permission to use this command!
+
+permissions:
+  bounty.*:
+    description: All Bounty permissions
+    default: true
+    children:
+      bounty.use: true
+      bounty.set: true
+      bounty.view: true
+      bounty.remove: true
+  bounty.use:
+    description: Use bounty commands
+    default: true
+  bounty.set:
+    description: Set bounties on players
+    default: true
+  bounty.view:
+    description: View bounties
+    default: true
+  bounty.remove:
+    description: Remove bounties (admin only)
+    default: op
+

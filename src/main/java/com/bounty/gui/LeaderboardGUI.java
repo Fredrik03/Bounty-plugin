@@ -125,11 +125,11 @@ public class LeaderboardGUI implements Listener {
 
     private Component getRankColor(int rank) {
         if (rank == 1) {
-            return Component.text("🥇 ", NamedTextColor.GOLD);
+            return Component.text("[1st] ", NamedTextColor.GOLD);
         } else if (rank == 2) {
-            return Component.text("🥈 ", NamedTextColor.GRAY);
+            return Component.text("[2nd] ", NamedTextColor.GRAY);
         } else if (rank == 3) {
-            return Component.text("🥉 ", NamedTextColor.RESET);
+            return Component.text("[3rd] ", NamedTextColor.YELLOW);
         }
         return Component.empty();
     }

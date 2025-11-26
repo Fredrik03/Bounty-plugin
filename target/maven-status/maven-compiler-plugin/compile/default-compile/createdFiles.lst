@@ -1,0 +1,12 @@
+com\bounty\managers\ItemRewardManager.class
+com\bounty\listeners\PlayerQuitListener.class
+com\bounty\gui\BountiesGUI.class
+com\bounty\commands\SetBountyCommand.class
+com\bounty\managers\BountyManager.class
+com\bounty\managers\LeaderboardManager.class
+com\bounty\gui\BountiesGUI$BountyEntry.class
+com\bounty\BountyPlugin.class
+com\bounty\gui\BountyDetailGUI.class
+com\bounty\listeners\PlayerDeathListener.class
+com\bounty\models\Bounty.class
+com\bounty\commands\BountyCommand.class
