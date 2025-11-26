@@ -135,88 +135,45 @@ public class BountySetGUI implements Listener {
             return;
         }
 
-        // Check if player has all items in their inventory
-        if (!hasItemsInInventory(setter, items)) {
-            setter.sendMessage("§cYou don't have all the required items in your inventory!");
-            return;
-        }
-
-        // Remove items from player's inventory
-        removeItemsFromInventory(setter, items);
-
-        // Set the bounty
+        // Items are already in the GUI (taken from inventory when placed)
+        // Just use them directly - no need to check or remove from inventory
+        
+        // Set the bounty with items from GUI
         if (plugin.getBountyManager().setBounty(target, setter, items)) {
+            // Clear the GUI slots (items are already removed from player's inventory)
+            clearGUISlots();
             setter.sendMessage("§aBounty set on §e" + target.getName() + "§a!");
-            setter.sendMessage("§7Items have been removed from your inventory.");
+            setter.sendMessage("§7Items have been used for the bounty.");
             setter.closeInventory();
         } else {
             setter.sendMessage("§cFailed to set bounty! Returning items...");
-            // Return items
+            // Return items to player's inventory
             for (ItemStack item : items) {
                 setter.getInventory().addItem(item);
+            }
+            clearGUISlots();
+        }
+    }
+    
+    private void clearGUISlots() {
+        // Clear all item slots in GUI (except buttons)
+        for (int i = 0; i < 54; i++) {
+            if (i != CONFIRM_SLOT && i != CANCEL_SLOT && i != 4) {
+                gui.setItem(i, null);
             }
         }
     }
 
     private void handleCancel() {
-        // Return items to player if any were placed
+        // Return items to player if any were placed in GUI
+        // When GUI closes, items automatically return to player's cursor/inventory
+        // But we'll manually return them to be safe
         List<ItemStack> items = getItemsFromGUI();
         for (ItemStack item : items) {
             setter.getInventory().addItem(item);
         }
+        clearGUISlots();
         setter.closeInventory();
-    }
-
-    private boolean hasItemsInInventory(Player player, List<ItemStack> requiredItems) {
-        Inventory inv = player.getInventory();
-        List<ItemStack> requiredCopy = new ArrayList<>();
-        for (ItemStack item : requiredItems) {
-            requiredCopy.add(item.clone());
-        }
-
-        for (ItemStack required : requiredCopy) {
-            int needed = required.getAmount();
-            for (ItemStack invItem : inv.getContents()) {
-                if (invItem != null && invItem.isSimilar(required)) {
-                    needed -= invItem.getAmount();
-                    if (needed <= 0) {
-                        break;
-                    }
-                }
-            }
-            if (needed > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void removeItemsFromInventory(Player player, List<ItemStack> itemsToRemove) {
-        Inventory inv = player.getInventory();
-        List<ItemStack> toRemove = new ArrayList<>();
-        for (ItemStack item : itemsToRemove) {
-            toRemove.add(item.clone());
-        }
-
-        for (ItemStack removeItem : toRemove) {
-            int toRemoveAmount = removeItem.getAmount();
-            for (int i = 0; i < inv.getSize(); i++) {
-                ItemStack invItem = inv.getItem(i);
-                if (invItem != null && invItem.isSimilar(removeItem)) {
-                    int amount = invItem.getAmount();
-                    if (amount <= toRemoveAmount) {
-                        inv.setItem(i, null);
-                        toRemoveAmount -= amount;
-                    } else {
-                        invItem.setAmount(amount - toRemoveAmount);
-                        toRemoveAmount = 0;
-                    }
-                    if (toRemoveAmount <= 0) {
-                        break;
-                    }
-                }
-            }
-        }
     }
 }
 
