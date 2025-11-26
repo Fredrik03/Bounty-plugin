@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -171,7 +172,8 @@ public class BountySetGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getInventory().equals(gui)) {
+        // Check if this is our GUI
+        if (event.getView().getTopInventory() != gui) {
             return;
         }
 
@@ -180,24 +182,67 @@ public class BountySetGUI implements Listener {
         }
 
         int slot = event.getRawSlot();
+        
+        // Check if clicking in the top inventory (our GUI)
+        if (slot < gui.getSize()) {
+            // Check if clicking in item area
+            if (ITEM_SLOTS.contains(slot)) {
+                // Allow all item operations in item area
+                // Don't cancel - let items be placed/removed freely
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    updateConfirmButton();
+                }, 1L);
+                return;
+            }
 
-        // Check if clicking in item area
-        if (ITEM_SLOTS.contains(slot)) {
-            // Allow all item operations in item area (place, pickup, swap, etc.)
-            // Don't cancel the event - let items be placed/removed freely
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                updateConfirmButton();
-            }, 1L);
+            // Prevent clicking on borders, buttons, and info
+            event.setCancelled(true);
+            
+            if (slot == CONFIRM_SLOT) {
+                handleConfirm();
+            } else if (slot == CANCEL_SLOT) {
+                handleCancel();
+            }
+        } else {
+            // Clicking in player inventory - allow it
+            // This allows dragging from player inventory to GUI
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        // Check if this is our GUI
+        if (event.getView().getTopInventory() != gui) {
             return;
         }
 
-        // Prevent clicking on borders, buttons, and info
-        event.setCancelled(true);
-        
-        if (slot == CONFIRM_SLOT) {
-            handleConfirm();
-        } else if (slot == CANCEL_SLOT) {
-            handleCancel();
+        if (!event.getWhoClicked().equals(setter)) {
+            return;
+        }
+
+        // Check if dragging into item area
+        boolean draggingIntoItemArea = false;
+        for (int slot : event.getRawSlots()) {
+            if (slot < gui.getSize() && ITEM_SLOTS.contains(slot)) {
+                draggingIntoItemArea = true;
+                break;
+            }
+        }
+
+        if (draggingIntoItemArea) {
+            // Allow dragging into item area
+            // Don't cancel - let items be placed
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                updateConfirmButton();
+            }, 1L);
+        } else {
+            // Prevent dragging into borders/buttons
+            for (int slot : event.getRawSlots()) {
+                if (slot < gui.getSize() && !ITEM_SLOTS.contains(slot)) {
+                    event.setCancelled(true);
+                    break;
+                }
+            }
         }
     }
 
