@@ -1,0 +1,17 @@
+# Bounty Plugin Configuration
+
+# Maximum number of bounties a player can have on them at once
+max-bounties-per-player: 10
+
+# Minimum items required to set a bounty
+min-bounty-items: 1
+
+# Maximum items allowed in a single bounty
+max-bounty-items: 36
+
+# Broadcast when a bounty is claimed
+broadcast-bounty-claim: true
+
+# Message format for bounty claim broadcast
+bounty-claim-message: "&a{claimer} has claimed the bounty on {target}!"
+
