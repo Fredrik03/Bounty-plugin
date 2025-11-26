@@ -181,23 +181,24 @@ public class BountySetGUI implements Listener {
 
         int slot = event.getRawSlot();
 
-        // Prevent clicking on borders, buttons, and info
-        if (!ITEM_SLOTS.contains(slot)) {
-            event.setCancelled(true);
-            
-            if (slot == CONFIRM_SLOT) {
-                handleConfirm();
-            } else if (slot == CANCEL_SLOT) {
-                handleCancel();
-            }
+        // Check if clicking in item area
+        if (ITEM_SLOTS.contains(slot)) {
+            // Allow all item operations in item area (place, pickup, swap, etc.)
+            // Don't cancel the event - let items be placed/removed freely
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                updateConfirmButton();
+            }, 1L);
             return;
         }
 
-        // Allow all item operations in item area (place, pickup, swap, etc.)
-        // Update confirm button after a short delay
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            updateConfirmButton();
-        }, 1L);
+        // Prevent clicking on borders, buttons, and info
+        event.setCancelled(true);
+        
+        if (slot == CONFIRM_SLOT) {
+            handleConfirm();
+        } else if (slot == CANCEL_SLOT) {
+            handleCancel();
+        }
     }
 
     @EventHandler
