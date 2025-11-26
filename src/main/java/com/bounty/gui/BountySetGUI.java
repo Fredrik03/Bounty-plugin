@@ -82,17 +82,7 @@ public class BountySetGUI implements Listener {
             gui.setItem(i + 8, border); // Right column
         }
         
-        // Fill item area with placeholder (light gray glass)
-        ItemStack placeholder = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        ItemMeta placeholderMeta = placeholder.getItemMeta();
-        if (placeholderMeta != null) {
-            placeholderMeta.displayName(Component.text("Place items here", NamedTextColor.GRAY));
-            placeholder.setItemMeta(placeholderMeta);
-        }
-        
-        for (int slot : ITEM_SLOTS) {
-            gui.setItem(slot, placeholder.clone());
-        }
+        // Item area slots are left empty - players can place items directly
     }
 
     private void setupButtons() {
@@ -203,15 +193,10 @@ public class BountySetGUI implements Listener {
             return;
         }
 
-        // Allow placing/removing items in item area
+        // Allow all item operations in item area (place, pickup, swap, etc.)
         // Update confirm button after a short delay
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             updateConfirmButton();
-            // Remove placeholder if item was placed
-            ItemStack item = gui.getItem(slot);
-            if (item != null && item.getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
-                gui.setItem(slot, null);
-            }
         }, 1L);
     }
 
@@ -239,7 +224,6 @@ public class BountySetGUI implements Listener {
         for (int slot : ITEM_SLOTS) {
             ItemStack item = gui.getItem(slot);
             if (item != null && item.getType() != Material.AIR 
-                && item.getType() != Material.LIGHT_GRAY_STAINED_GLASS_PANE
                 && item.getType() != Material.BLACK_STAINED_GLASS_PANE) {
                 items.add(item);
             }
