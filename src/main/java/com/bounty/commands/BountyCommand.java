@@ -4,6 +4,7 @@ import com.bounty.BountyPlugin;
 import com.bounty.gui.BountiesGUI;
 import com.bounty.gui.LeaderboardGUI;
 import com.bounty.models.Bounty;
+import com.bounty.utils.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 
 public class BountyCommand implements CommandExecutor {
 
@@ -32,7 +32,7 @@ public class BountyCommand implements CommandExecutor {
                     return true;
                 }
             }
-            sender.sendMessage("§cUsage: /bounty <list|view|remove|leaderboard>");
+            MessageUtils.sendMessage(sender, "§cUsage: /bounty <list|view|remove|leaderboard>");
             return true;
         }
 
@@ -47,7 +47,7 @@ public class BountyCommand implements CommandExecutor {
                         new BountiesGUI(plugin, (Player) sender).open();
                         return true;
                     }
-                    sender.sendMessage("§cUsage: /bounty view <player>");
+                    MessageUtils.sendMessage(sender, "§cUsage: /bounty view <player>");
                     return true;
                 }
                 return handleView(sender, args[1]);
@@ -60,43 +60,43 @@ public class BountyCommand implements CommandExecutor {
                         return true;
                     }
                 }
-                sender.sendMessage("§cYou don't have permission to view the leaderboard!");
+                MessageUtils.sendMessage(sender, "§cYou don't have permission to view the leaderboard!");
                 return true;
             case "remove":
                 if (!sender.hasPermission("bounty.remove")) {
-                    sender.sendMessage("§cYou don't have permission to remove bounties!");
+                    MessageUtils.sendMessage(sender, "§cYou don't have permission to remove bounties!");
                     return true;
                 }
                 if (args.length < 3) {
-                    sender.sendMessage("§cUsage: /bounty remove <player> <index>");
+                    MessageUtils.sendMessage(sender, "§cUsage: /bounty remove <player> <index>");
                     return true;
                 }
                 return handleRemove(sender, args[1], args[2]);
             default:
-                sender.sendMessage("§cUnknown subcommand. Use: list, view, leaderboard, or remove");
+                MessageUtils.sendMessage(sender, "§cUnknown subcommand. Use: list, view, leaderboard, or remove");
                 return true;
         }
     }
 
     private boolean handleList(CommandSender sender) {
         if (!sender.hasPermission("bounty.view")) {
-            sender.sendMessage("§cYou don't have permission to view bounties!");
+            MessageUtils.sendMessage(sender, "§cYou don't have permission to view bounties!");
             return true;
         }
 
-        sender.sendMessage("§6=== Active Bounties ===");
+        MessageUtils.sendMessage(sender, "§6=== Active Bounties ===");
         boolean foundAny = false;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             List<Bounty> bounties = plugin.getBountyManager().getBounties(player);
             if (!bounties.isEmpty()) {
                 foundAny = true;
-                sender.sendMessage("§e" + player.getName() + " §7- §a" + bounties.size() + " bounty/bounties");
+                MessageUtils.sendMessage(sender, "§e" + player.getName() + " §7- §a" + bounties.size() + " bounty/bounties");
             }
         }
 
         if (!foundAny) {
-            sender.sendMessage("§7No active bounties.");
+            MessageUtils.sendMessage(sender, "§7No active bounties.");
         }
 
         return true;
@@ -104,28 +104,28 @@ public class BountyCommand implements CommandExecutor {
 
     private boolean handleView(CommandSender sender, String playerName) {
         if (!sender.hasPermission("bounty.view")) {
-            sender.sendMessage("§cYou don't have permission to view bounties!");
+            MessageUtils.sendMessage(sender, "§cYou don't have permission to view bounties!");
             return true;
         }
 
         Player target = Bukkit.getPlayer(playerName);
         if (target == null) {
-            sender.sendMessage("§cPlayer §e" + playerName + " §cis not online!");
+            MessageUtils.sendMessage(sender, "§cPlayer §e" + playerName + " §cis not online!");
             return true;
         }
 
         List<Bounty> bounties = plugin.getBountyManager().getBounties(target);
         if (bounties.isEmpty()) {
-            sender.sendMessage("§7" + target.getName() + " has no active bounties.");
+            MessageUtils.sendMessage(sender, "§7" + target.getName() + " has no active bounties.");
             return true;
         }
 
-        sender.sendMessage("§6=== Bounties on " + target.getName() + " ===");
+        MessageUtils.sendMessage(sender, "§6=== Bounties on " + target.getName() + " ===");
         for (int i = 0; i < bounties.size(); i++) {
             Bounty bounty = bounties.get(i);
             String setterName = Bukkit.getOfflinePlayer(bounty.getSetterPlayer()).getName();
             int itemCount = bounty.getRewardItems().size();
-            sender.sendMessage("§7[" + i + "] §e" + itemCount + " items §7(set by: §e" + setterName + "§7)");
+            MessageUtils.sendMessage(sender, "§7[" + i + "] §e" + itemCount + " items §7(set by: §e" + setterName + "§7)");
         }
 
         return true;
@@ -134,19 +134,19 @@ public class BountyCommand implements CommandExecutor {
     private boolean handleRemove(CommandSender sender, String playerName, String indexStr) {
         Player target = Bukkit.getPlayer(playerName);
         if (target == null) {
-            sender.sendMessage("§cPlayer §e" + playerName + " §cis not online!");
+            MessageUtils.sendMessage(sender, "§cPlayer §e" + playerName + " §cis not online!");
             return true;
         }
 
         try {
             int index = Integer.parseInt(indexStr);
             if (plugin.getBountyManager().removeBounty(target, index)) {
-                sender.sendMessage("§aRemoved bounty #" + index + " from " + target.getName() + ".");
+                MessageUtils.sendMessage(sender, "§aRemoved bounty #" + index + " from " + target.getName() + ".");
             } else {
-                sender.sendMessage("§cInvalid bounty index!");
+                MessageUtils.sendMessage(sender, "§cInvalid bounty index!");
             }
         } catch (NumberFormatException e) {
-            sender.sendMessage("§cInvalid number: §e" + indexStr);
+            MessageUtils.sendMessage(sender, "§cInvalid number: §e" + indexStr);
         }
 
         return true;

@@ -1,6 +1,7 @@
 package com.bounty.gui;
 
 import com.bounty.BountyPlugin;
+import com.bounty.utils.MessageUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -281,17 +282,17 @@ public class BountySetGUI implements Listener {
         List<ItemStack> items = getItemsFromGUI();
         
         if (items.isEmpty()) {
-            setter.sendMessage("§cYou must place at least one item in the bounty!");
+            MessageUtils.sendMessage(setter, "§cYou must place at least one item in the bounty!");
             return;
         }
 
         // Set the bounty with items from GUI
         if (plugin.getBountyManager().setBounty(target, setter, items)) {
-            setter.sendMessage("§a§l✓ Bounty set on §e§l" + target.getName() + "§a§l!");
-            setter.sendMessage("§7Items have been used for the bounty.");
+            MessageUtils.sendMessage(setter, "§a§l✓ Bounty set on §e§l" + target.getName() + "§a§l!");
+            MessageUtils.sendMessage(setter, "§7Items have been used for the bounty.");
             setter.closeInventory();
         } else {
-            setter.sendMessage("§cFailed to set bounty! Returning items...");
+            MessageUtils.sendMessage(setter, "§cFailed to set bounty! Returning items...");
             // Return items to player's inventory
             for (ItemStack item : items) {
                 setter.getInventory().addItem(item);
@@ -307,7 +308,7 @@ public class BountySetGUI implements Listener {
                 setter.getInventory().addItem(item);
             }
         }
-        setter.sendMessage("§7Bounty cancelled. Items returned to inventory.");
+        MessageUtils.sendMessage(setter, "§7Bounty cancelled. Items returned to inventory.");
         setter.closeInventory();
     }
 }

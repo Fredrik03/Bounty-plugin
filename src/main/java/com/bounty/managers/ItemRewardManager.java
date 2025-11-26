@@ -1,6 +1,7 @@
 package com.bounty.managers;
 
 import com.bounty.BountyPlugin;
+import com.bounty.utils.MessageUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -48,13 +49,13 @@ public class ItemRewardManager {
         if (!remainingItems.isEmpty()) {
             // Add to pending rewards
             pendingRewards.computeIfAbsent(killer.getUniqueId(), k -> new ArrayList<>()).addAll(remainingItems);
-            killer.sendMessage("§eYou claimed bounties on §c" + victim.getName() + "§e!");
-            killer.sendMessage("§7Some items couldn't fit in your inventory. They will be given when you have space.");
+            MessageUtils.sendMessage(killer, "§eYou claimed bounties on §c" + victim.getName() + "§e!");
+            MessageUtils.sendMessage(killer, "§7Some items couldn't fit in your inventory. They will be given when you have space.");
             
             // Start checking for inventory space
             startInventoryCheck(killer);
         } else {
-            killer.sendMessage("§aYou claimed bounties on §c" + victim.getName() + "§a!");
+            MessageUtils.sendMessage(killer, "§aYou claimed bounties on §c" + victim.getName() + "§a!");
         }
 
         // Broadcast if enabled
@@ -122,7 +123,7 @@ public class ItemRewardManager {
             
             if (remaining.isEmpty()) {
                 // All items given
-                player.sendMessage("§aAll bounty rewards have been added to your inventory!");
+                MessageUtils.sendMessage(player, "§aAll bounty rewards have been added to your inventory!");
                 pendingRewards.remove(uuid);
                 pendingTasks.remove(uuid).cancel();
             } else {
@@ -148,7 +149,7 @@ public class ItemRewardManager {
                     if (pending != null && !pending.isEmpty()) {
                         List<ItemStack> remaining = giveItemsToPlayer(player, new ArrayList<>(pending));
                         if (remaining.isEmpty()) {
-                            player.sendMessage("§aAll bounty rewards have been added to your inventory!");
+                            MessageUtils.sendMessage(player, "§aAll bounty rewards have been added to your inventory!");
                             pendingRewards.remove(uuid);
                             if (pendingTasks.containsKey(uuid)) {
                                 pendingTasks.remove(uuid).cancel();
