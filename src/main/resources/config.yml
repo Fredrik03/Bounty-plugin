@@ -15,3 +15,4 @@ broadcast-bounty-claim: true
 # Message format for bounty claim broadcast
 bounty-claim-message: "&a{claimer} has claimed the bounty on {target}!"
 
+
